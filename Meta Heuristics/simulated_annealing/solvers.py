@@ -68,7 +68,7 @@ def VRP_solver_factory(adjacency_matrix, demand_list, delivery_window_list, capa
                         function_dict['capacity_condition'](
                         current_load,capacity, node, current_path_dist,
                         delivery_window_list
-                        )
-                ))
+                        )),
+                    return_history = True)
 
     return solver
