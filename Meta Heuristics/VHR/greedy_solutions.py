@@ -14,7 +14,7 @@ def nearest_neighbour_solution(graph,
     current_node = start_node
 
     current_path_dist = 0
-    current_load = capacity_null_value()
+    current_load = node_demand[current_node]
     while sum(unexplored) != 0:
         #print(current_capacity, current_node)
         

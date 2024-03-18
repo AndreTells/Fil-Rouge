@@ -18,7 +18,6 @@ def valid_path(
             path_load = capacity_null_value()
 
         path_load = capacity_add(path_load, node_demand[current_node])
-
         if(not capacity_condition(path_load,capacity)):
             return False
 
