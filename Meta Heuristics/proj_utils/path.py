@@ -30,9 +30,3 @@ def print_path(points, sol):
         y = list(map(lambda x: points[x][1], path))
         path_graph, = ax.plot(x,y)
         path_graphs.append(path_graph)
-
-def total_path_value(sol, mat):
-    value = 0
-    for i,j in zip(sol[:-1], sol[1:]):
-        value += mat[i][j]
-    return value

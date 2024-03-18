@@ -30,12 +30,7 @@ def _generate_complete_graph(points):
 
 def generator(num_points):
     points = _generate_random_points(num_points)
-    demand_list = [(0,0,0)]+[(1,1, 1) for _ in range(num_points-1)]
-    delivery_window_list = [(0,float('inf'))]+[(0,int(uniform(300,400))) for _ in range(num_points-1)]
+    demand_list = [(0,0)]+[(1,1) for _ in range(num_points-1)]
     adjacency_matrix = _generate_complete_graph(points)
 
-    weight_capacity = 20
-    volume_capacity = 20
-    vehicle_capacity = (weight_capacity, volume_capacity, float('inf'))
-
-    return adjacency_matrix, demand_list, delivery_window_list, vehicle_capacity, points
+    return adjacency_matrix, demand_list, points

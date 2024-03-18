@@ -12,7 +12,7 @@ def _calculate_customer_loads(route_id, customer_df):
     lim_volume = df_lim['TOTAL_VOLUME_M3'].tolist()
     lim_time = df_lim['CUSTOMER_DELIVERY_SERVICE_TIME_MIN'].tolist()
 
-    lista_limites = [(0,0,0)]+list(zip(lim_peso,lim_volume, lim_time))
+    lista_limites = [(0,0)]+list(zip(lim_peso,lim_volume))
     return lista_limites
 
 def _calculate_dist_adjacency_matrix(route_id, customer_df, deposit_df ):
@@ -112,4 +112,4 @@ def format_input(route_id, customer_df, deposit_df):
     customer_loads = _calculate_customer_loads(route_id, customer_df)
     adjacency_matrix,points = _calculate_time_adjacency_matrix(route_id, customer_df, deposit_df, 0.6)
     delivery_window = _calculate_delivery_windows(route_id, customer_df)
-    return adjacency_matrix, customer_loads, delivery_window, points
+    return adjacency_matrix, customer_loads, points

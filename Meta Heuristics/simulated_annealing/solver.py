@@ -1,14 +1,14 @@
 from random import uniform
-from .calculate_temperature_functions import standard_calculate_temperature_function
-from .acceptance_prob_functions import standard_acceptance_prob_function
-from .vrp_functions import vrp_function_config
+from .temperature_functions import *
+from .probability_functions import *
 
-
-def generic_solver_factory(get_initial_state,get_random_neighbour,
-                                state_to_energy,
-                                calculate_temperature = standard_calculate_temperature_function,
-                                acceptance_prob_function = standard_acceptance_prob_function,
-                                debug_mode = False, return_history = False):
+def generic_solver_factory( get_initial_state,
+                            get_random_neighbour,
+                            state_to_energy,
+                            calculate_temperature = temperature_standard,
+                            acceptance_prob_function = probability_standard,
+                            debug_mode = False,
+                            return_history = False):
     def simulated_annealing(k_max):
         s = get_initial_state()
         history = {'temperature':[], 'current_energy':[], 'state':[]}
@@ -45,6 +45,7 @@ def generic_solver_factory(get_initial_state,get_random_neighbour,
 
     return simulated_annealing
 
+'''
 def VRP_solver_factory(adjacency_matrix, demand_list, delivery_window_list, capacity):
     function_dict = vrp_function_config['standard']
 
@@ -72,3 +73,4 @@ def VRP_solver_factory(adjacency_matrix, demand_list, delivery_window_list, capa
                     return_history = True)
 
     return solver
+'''
