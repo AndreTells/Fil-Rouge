@@ -1,5 +1,7 @@
 from .capacity import *
 
+
+# returns whether the given sequence of nodes breaks the capacity condition
 def valid_path(
     path,
     capacity,
@@ -23,6 +25,7 @@ def valid_path(
 
     return True
 
+# calculates the total distance of the path sol through the graph `mat`
 def calculate_path_distance(sol, mat):
     value = 0
     for i,j in zip(sol[:-1], sol[1:]):

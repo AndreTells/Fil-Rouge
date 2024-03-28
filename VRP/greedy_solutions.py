@@ -1,5 +1,6 @@
 from .capacity import *
 
+# returns a solution to the VRP by always picking the clossest neighbour
 def nearest_neighbour_solution(graph, 
                     node_demand, 
                     capacity,
