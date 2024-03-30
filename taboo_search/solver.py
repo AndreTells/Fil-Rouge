@@ -1,12 +1,13 @@
-from random import uniform
-from .acceptance_prob_functions import standard_acceptance_prob_function
+from collections.abc import Callable
+from typing import TypeVar
 from solver_step import SolverStep
 
-def taboo_search_solver_factory(get_random_neighbour,
-                                state_to_energy,
-                                tabu_list_size):
+State = TypeVar('State')   
+def taboo_search_solver_factory(get_random_neighbour: Callable[[State],State],
+                                state_to_energy: Callable[[State], float],
+                                tabu_list_size: int)-> Callable[[SolverStep], SolverStep]:
 
-    def taboo_search_step(init_state):
+    def taboo_search_step(init_state: SolverStep)->SolverStep:
         s = init_state.get_best_sol()
         tabu_list = []
         

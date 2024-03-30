@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
+Path = list[int]
 
-def split_paths(paths):
-    path_list= []
+def split_paths(paths: Path)->list[Path]:
+    path_list: list[Path]= []
     path_id = -1
     for i in paths:
         if(i == 0):
@@ -15,7 +16,7 @@ def split_paths(paths):
 
     return path_list[:-1]
 
-def print_path(points, sol):
+def print_path(points: list[tuple[int,int]], sol: Path):
     x = list(map(lambda x: points[x][0], sol))
     y = list(map(lambda x: points[x][1], sol))
 

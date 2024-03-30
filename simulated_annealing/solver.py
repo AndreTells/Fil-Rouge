@@ -1,11 +1,15 @@
+from collections.abc import Callable
+from typing import TypeVar
 from random import uniform
 from .temperature_functions import *
 from .probability_functions import *
 from solver_step import SolverStep
 
+
+State = TypeVar('State')
 # generates a function to solve a given problem using simulated annealing
-def generic_solver_factory( get_random_neighbour,
-                            state_to_energy,
+def generic_solver_factory( get_random_neighbour: Callable[[State],State],
+                            state_to_energy: Callable[[State], float],
                             calculate_temperature = temperature_standard,
                             acceptance_prob_function = probability_standard):
 

@@ -1,15 +1,17 @@
+from collections.abc import Callable
 from .capacity import *
+Path = list[int]
 
 
 # returns whether the given sequence of nodes breaks the capacity condition
 def valid_path(
-    path,
-    capacity,
-    node_demand,
-    capacity_add = capacity_add,
-    capacity_null_value = capacity_null_value,
-    capacity_condition = capacity_condition
-    ):
+    path: Path,
+    capacity: Capacity,
+    node_demand: list[Capacity],
+    capacity_add: Callable[[Capacity,Capacity],Capacity] = capacity_add,
+    capacity_null_value : Callable[[], Capacity]= capacity_null_value,
+    capacity_condition:  Callable[[Capacity,Capacity],bool]= capacity_condition
+    )->bool:
 
     path_load = capacity_null_value()
     for i in range(len(path)-1):
@@ -26,8 +28,8 @@ def valid_path(
     return True
 
 # calculates the total distance of the path sol through the graph `mat`
-def calculate_path_distance(sol, mat):
-    value = 0
+def calculate_path_distance(sol:Path, mat: list[list[float]])-> float:
+    value: float = 0
     for i,j in zip(sol[:-1], sol[1:]):
         value += mat[i][j]
     return value
