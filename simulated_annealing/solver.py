@@ -23,6 +23,6 @@ def generic_solver_factory( get_random_neighbour,
             limit = uniform(0,1)
             if res_acceptance_prob_function >= limit:
                 s = s_new
-        return SolverStep(init_state.get_step_count()+1,s,init_state.get_step_size())
+        return SolverStep(init_state.get_step_count()+1,s, state_to_energy(s),init_state.get_step_size())
 
     return simulated_annealing_step
