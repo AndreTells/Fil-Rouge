@@ -1,6 +1,6 @@
 from mesa import Agent
 
-class VRPSolverAgent(Agent):
+class SolverAgent(Agent):
     def __init__(self,
                  unique_id,
                  model,
@@ -20,6 +20,8 @@ class VRPSolverAgent(Agent):
 
     def get_help(self):
         self.current_step = model.solution_pool.get_best_sol()
+        if(self.current_step == None):
+            self.current_step = model.rand_step_generator()      
         return
         
 
