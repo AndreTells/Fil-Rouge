@@ -7,18 +7,13 @@ class SolverStep(Generic[T]):
     state_value: float
     step_size: int
 
-    def __init__(self, current_step: int, state: T, state_value: float, step_size: int):
-        # history of execution of steps
-        self.current_step = current_step
+    def __init__(self, state: T, state_value: float, step_size: int):
         # a solution to the problem in question
         self.state: T = state
         # the value of the solution above
         self.state_value = state_value
         # how many interations the next step will do
         self.step_size = step_size
-
-    def get_step_count(self)->int:
-        return self.current_step
 
     def get_best_sol(self)->T:
         return self.state

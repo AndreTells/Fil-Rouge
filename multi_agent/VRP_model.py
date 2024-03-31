@@ -4,9 +4,15 @@ from mesa import DataCollector
 from .VRP_agent import VRPSolverAgent
 
 class VRPSolutionModel(Model):
-    def __init__(self, init_step,step_function_list):
+    def __init__(
+        self,
+        init_step,
+        step_function_list,
+        solution_pool):
         super().__init__()
         self.schedule=SimultaneousActivation(self)
+        
+        self.solution_pool = solution_pool
 
         id_counter = 0
         for step_function in step_function_list:
@@ -41,6 +47,7 @@ class VRPSolutionModel(Model):
         self.datacollector = DataCollector(
             model_reporters={"TheGlobalBest": compute_global_best_state, "TheGlobalBestValue": compute_global_best_value},   
         )
+
     def step(self):
         self.schedule.step()
         self.datacollector.collect(self)

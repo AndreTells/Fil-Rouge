@@ -21,6 +21,6 @@ def taboo_search_solver_factory(get_random_neighbour: Callable[[State],State],
                 if len(tabu_list) > tabu_list_size:
                     tabu_list.pop(0)
 
-        return SolverStep(init_state.get_step_count()+1,s, state_to_energy(s), init_state.get_step_size())
+        return SolverStep(s, state_to_energy(s), init_state.get_step_size())
 
     return taboo_search_step
