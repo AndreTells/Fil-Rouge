@@ -33,5 +33,7 @@ class solution_pool_simple:
         
         return
 
-    def get_best_sol():
-        return max(self.pool, key= lambda x:x.get_best_sol_value())
+    def get_best_sol(self):
+        if(len(self.pool)==0):
+            return None
+        return min(self.pool, key= lambda x:x.get_best_sol_value())
