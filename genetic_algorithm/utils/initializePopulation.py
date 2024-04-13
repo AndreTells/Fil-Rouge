@@ -9,7 +9,7 @@ truckSpd = 0.6
 
 
 def initializePopulation(population_size, numberOfTrucks, customers, demandForCustomer):
-    """This function just initializes and returns a starting population array while keeping the constraints in mind"""
+    """This function initializes and returns a starting population array while keeping the constraints in mind"""
     population = []
     random.seed()
 
