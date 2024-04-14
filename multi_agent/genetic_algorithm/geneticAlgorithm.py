@@ -1,14 +1,14 @@
 import random
-from utils.helperFunctions import *
+from .utils.helperFunctions import *
 import heapq
 
 # from loadData import *
-from utils.initializePopulation import initializePopulation
+from .utils.initializePopulation import initializePopulation
 
-# General constant variables
-truckKg = 2e4
-truckVol = 20
-truckSpd = 0.6
+# # General constant variables
+# truckKg = 2e4
+# truckVol = 20
+# truckSpd = 0.6
 
 
 def _tournamentSelection(population, tournament_size, mating_pool_size, fitnessScores):
@@ -190,12 +190,18 @@ def genetic_algorithm(
     maxGenNumber=100,
     mutationRate=0.05,
     population=None,
+    verbose=False,
 ):
     """O(m*n)(AMORTIZED) where m is the number of generations and n is the population number"""
     if population is None:
         # Initializing random population
         population = initializePopulation(
-            populationSize, numberOfTrucks, customersId, demandForCustomer
+            populationSize,
+            numberOfTrucks,
+            customersId,
+            demandForCustomer,
+            truckCapacityKg,
+            truckCapacityVol,
         )
         print("population generated")
 
@@ -236,9 +242,9 @@ def genetic_algorithm(
         population = [sol for _, sol in fitness_heap]
         best_fitness, best_solution = fitness_heap[0]
         history.append(best_fitness)
-        if generations % 10 == 0:
+        if verbose and (generations % 10 == 0):
             print(f"Generation {generations}: Best Fitness = {best_fitness}")
 
-    print(f"Best Solution Found: {best_solution}")
-    print(f"With Fitness: {best_fitness}")
+    # print(f"Best Solution Found: {best_solution}")
+    # print(f"With Fitness: {best_fitness}")
     return best_solution, best_fitness, history, population

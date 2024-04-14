@@ -2,8 +2,8 @@ from mesa import Model
 from mesa.time import SimultaneousActivation
 from mesa import DataCollector
 import pandas as pd
-from loadData import getData
-from GeneticAgent import GeneticAgent
+from multi_agent.genetic_algorithm.loadData import getData
+from multi_agent.GeneticAgent import GeneticAgent
 
 
 class modelTest(Model):
@@ -23,7 +23,10 @@ class modelTest(Model):
             self.schedule.add(agent)
         self.datacollector = DataCollector(
             # model_reporters={"TheGlobalBest": compute_global_best},
-            agent_reporters={"Best": lambda a: a.bestFitness}
+            agent_reporters={
+                "Best": lambda a: a.current_step.get_best_sol_value(),
+                "solution": lambda a: a.current_step.get_best_sol(),
+            }
         )
 
     def step(self):
@@ -43,7 +46,8 @@ for i in range(generations):
 agent_state = model.datacollector.get_agent_vars_dataframe()
 print(agent_state)
 res = agent_state.unstack()
+print("aaaaa")
 print(res)
 res.plot()
 print("la meilleure valeur trouvée : ")
-print(res.min().min())
+print(res["Best"].min().min())

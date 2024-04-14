@@ -3,12 +3,14 @@ import random
 from .helperFunctions import *
 
 # General constant variables
-truckKg = 2e4
-truckVol = 20
-truckSpd = 0.6
+# truckKg = 2e4
+# truckVol = 20
+# truckSpd = 0.6
 
 
-def initializePopulation(population_size, numberOfTrucks, customers, demandForCustomer):
+def initializePopulation(
+    population_size, numberOfTrucks, customers, demandForCustomer, truckKg, truckVol
+):
     """This function initializes and returns a starting population array while keeping the constraints in mind"""
     population = []
     random.seed()
