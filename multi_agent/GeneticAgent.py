@@ -22,6 +22,8 @@ class GeneticAgent(Agent):
         collaborative=ColaborationTypes.NONE,
         allowWorseSolution=False,
         stepSize=1,
+        mutation_rate=0.12,
+        enemiesGenerationsTolerance=30,
     ):
         super().__init__(uniqueId, model)
         self.population = initialPopulation
@@ -40,12 +42,8 @@ class GeneticAgent(Agent):
         (self.bestFitness, self.current_best_fitness) = (float("inf"), float("inf"))
         self.current_step = SolverStep(None, float("inf"), stepSize)
         self.generations = 0
-
-    def share_step(self, step):
-        self.current_step = self.model.solution_pool.get_best_sol()
-        if self.current_step == None:
-            self.current_step = self.model.rand_step_generator()
-        return
+        self.mutation_rate = mutation_rate
+        self.enemyTolerance = enemiesGenerationsTolerance
 
     def flattenSolution(self, solution):
         # Flattens the array to be in the format : 0,1,2,0,3,2,0,2,1,0
@@ -67,22 +65,26 @@ class GeneticAgent(Agent):
                 truck.append(elem)
         return trucks
 
-    def update_population(self):
-        pool = self.model.solution_pool.pool.copy()
-        if self.population and pool:
-            ## self.population is ordered by fitness values
-            # Keep the best performance solutions while substitute the worst performing ones with the ones at the solution pool
-            self.population = self.population[: -len(pool)]
-            for flattenedSolution in pool:
-                self.population += self.rebuildFlattenSolution(flattenedSolution)
+    def handleEnemies(self, generationTolerance):
+        """This function has a patience limit. It will try to find a better solution by adding generationTolerance // 2 generations. If not successful, double mutation_rate to add genetic variability and run for another generationTolerance // 2 generations."""
+        bestSol = self.model.solution_pool.get_best_sol()
+        if bestSol is None:
+            return
+        fitnessToBeat = bestSol.get_best_sol_value()
+
+        i = 0
+        while (i < (generationTolerance // 2)) and (
+            self.current_best_fitness > fitnessToBeat
+        ):
+            self.nextGen(self.mutation_rate)
+            i += 1
+
+        while i < generationTolerance and self.current_best_fitness > fitnessToBeat:
+            self.nextGen(2 * self.mutation_rate)
+            i += 1
         return
 
-    def step(self):
-
-        match (self.collaborative):
-            case ColaborationTypes.FRIENDS:
-                self.update_population()
-
+    def nextGen(self, mutation_rate):
         (
             self.current_best_solution,
             self.current_best_fitness,
@@ -97,20 +99,21 @@ class GeneticAgent(Agent):
             self.cost,
             self.demandForCustomer,
             self.stepSize,
-            mutationRate=0.12,
+            mutationRate=mutation_rate,
             population=self.population,
         )
         if self.generations > 0:
 
-            # If found better solution
+            # If found better solution, update the corresponding attributes
             if self.current_best_fitness < self.bestFitness:
                 self.best_overall_solution = self.current_best_solution
                 self.current_step.state = self.flattenSolution(
-                    self.best_current_solution
+                    self.current_best_solution
                 )
                 self.current_step.state_value = self.current_best_fitness
                 self.bestFitness = self.current_best_fitness
 
+            # It's necessary to fill the solution_pool in case of collaboration
             if self.collaborative != ColaborationTypes.NONE:
                 step = SolverStep(
                     self.flattenSolution(self.current_best_solution),
@@ -118,10 +121,29 @@ class GeneticAgent(Agent):
                     self.stepSize,
                 )
                 self.model.solution_pool.add_solution(step)
-            self.generations += 1
+        self.generations += 1
 
-    def get_help(self):
-        self.current_step
+    def update_population(self):
+        pool = self.model.solution_pool.pool.copy()
+        if self.population and pool:
+            # self.population is ordered by fitness values !
+            # Keeps the best performance solutions while switches the worst performing ones with the ones in the solution pool
+            self.population = self.population[: -len(pool)]
+            for flattenedSolution in pool:
+                self.population += self.rebuildFlattenSolution(
+                    flattenedSolution.get_best_sol()
+                )
+        return
+
+    def step(self):
+
+        match (self.collaborative):
+            case ColaborationTypes.FRIENDS:
+                self.update_population()
+            case ColaborationTypes.ENEMIES:
+                self.handleEnemies(self.enemyTolerance)
+                return
+        self.nextGen(self.mutation_rate)
 
 
 def createGeneticAgent(
@@ -133,6 +155,7 @@ def createGeneticAgent(
     truckCapacityVol,
     step_size=1,
     collaborative=ColaborationTypes.NONE,
+    generationsToTolerateEnemies=30,
 ):
     customersDf = pd.read_excel("data/2_detail_table_customers.xls")
     depotsDf = pd.read_excel("data/4_detail_table_depots.xls")
@@ -152,5 +175,6 @@ def createGeneticAgent(
         demand,
         stepSize=step_size,
         collaborative=collaborative,
+        enemiesGenerationsTolerance=generationsToTolerateEnemies,
     )
     return agent
