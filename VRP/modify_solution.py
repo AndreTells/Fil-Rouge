@@ -8,6 +8,9 @@ def rand_opt_n(path: Path, num_of_nodes: int, n: int=1)-> Path:
         i = int((num_of_nodes-1) * random.random()) + 1 # generate a random number between 1 and num_of_nodes
         j = int((num_of_nodes-1) * random.random()) + 1 # generate a random number between 1 and num_of_nodes
 
+        if(new_state[j] ==0 or new_state[i] ==0):
+            return path
+
         new_state[i], new_state[j] = new_state[j], new_state[i]
 
     return new_state
