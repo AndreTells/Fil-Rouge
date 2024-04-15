@@ -2,6 +2,7 @@ from mesa import Model
 from mesa.time import SimultaneousActivation
 from mesa import DataCollector
 from .solver_agent import SolverAgent
+from .GeneticAgent import createGeneticAgent
 from .colaboration_types import ColaborationTypes
 
 
@@ -10,6 +11,9 @@ class MultiAgentSolverModel(Model):
         self,
         rand_step_generator,
         step_function_list,
+        route_id,
+        truckCapacityKg,
+        truckCapacityVol,
         solution_pool,
         colaboration_type=ColaborationTypes.NONE,
     ):
@@ -31,6 +35,19 @@ class MultiAgentSolverModel(Model):
             self.schedule.add(a)
 
             id_counter += 1
+
+        # Genetic Agent Setup
+        GApopulationSize = 50
+        GA = createGeneticAgent(
+            id_counter,
+            self,
+            route_id,
+            GApopulationSize,
+            truckCapacityKg,
+            truckCapacityVol,
+            step_size=1,
+        )
+        self.schedule.add(GA)
 
         def compute_global_best_state(model):
             best_sol = None

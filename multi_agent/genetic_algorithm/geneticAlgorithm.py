@@ -1,13 +1,14 @@
 import random
-from utils.helperFunctions import *
+from .utils.helperFunctions import *
+import heapq
 
 # from loadData import *
-from utils.initializePopulation import initializePopulation
+from .utils.initializePopulation import initializePopulation
 
-# General constant variables
-truckKg = 2e4
-truckVol = 20
-truckSpd = 0.6
+# # General constant variables
+# truckKg = 2e4
+# truckVol = 20
+# truckSpd = 0.6
 
 
 def _tournamentSelection(population, tournament_size, mating_pool_size, fitnessScores):
@@ -105,7 +106,7 @@ def _reconstruct_routes(
             current_weight + node_weight > truckCapacityKg
             or current_volume + node_volume > truckCapacityVolume
         ):
-            # Finish current roxute and start a new one
+            # Finish current route and start a new one
             current_route.append(0)  # End with depot
             routes.append(current_route)
             current_route = [0, node]  # Start new route with depot and node
@@ -143,6 +144,7 @@ def _treatCrossOver(parents, truckCapacityKg, truckCapacityVol, demandForCustome
     return population
 
 
+# TODO: Apply Q-learning here
 def _mutation(solution, demandForCustomer, truckCapacityKg, truckCapacityVolume):
 
     # Randomly select one truck
@@ -150,6 +152,7 @@ def _mutation(solution, demandForCustomer, truckCapacityKg, truckCapacityVolume)
     route = solution[truck_index]
 
     # Ensure there are enough customers for a swap
+    # SWAP
     if len(route) > 4:  # More than just depot (start/end) and one customer
         # Randomly select two customers to swap
         customer_index1, customer_index2 = random.sample(range(1, len(route) - 1), 2)
@@ -186,25 +189,34 @@ def genetic_algorithm(
     demandForCustomer,
     maxGenNumber=100,
     mutationRate=0.05,
+    population=None,
+    verbose=False,
 ):
-    # Initializing random population
-    population = initializePopulation(
-        populationSize, numberOfTrucks, customersId, demandForCustomer
-    )
-    print("population generated")
+    """O(m*n)(AMORTIZED) where m is the number of generations and n is the population number"""
+    if population is None:
+        # Initializing random population
+        population = initializePopulation(
+            populationSize,
+            numberOfTrucks,
+            customersId,
+            demandForCustomer,
+            truckCapacityKg,
+            truckCapacityVol,
+        )
+        print("population generated")
+
     generations = 0
 
-    best_solution = None
-    best_fitness = float("inf")
     history = []
     while generations < maxGenNumber:
+        # Shuffle to avoid dependency on sorting which leads to decrease in genetic variability.
+        random.shuffle(population)
+
+        ## MinHeap to keep track of current best and not-so-best solutions.
+        fitness_heap = []
+
         # calculate fitness function
         fitnesses = [fitnessFunction(sol, cost) for sol in population]
-
-        for i, fitness in enumerate(fitnesses):
-            if fitness < best_fitness:
-                best_fitness = fitness
-                best_solution = population[i]
 
         # Calculate 'winners' after selection via tournament
         winners = _tournamentSelection(population, 2, len(population), fitnesses)
@@ -222,10 +234,17 @@ def genetic_algorithm(
                 )
 
         generations += 1
+
+        newFitnesses = [fitnessFunction(sol, cost) for sol in population]
+        for i, fitness in enumerate(newFitnesses):
+            heapq.heappush(fitness_heap, (fitness, population[i]))
+
+        population = [sol for _, sol in fitness_heap]
+        best_fitness, best_solution = fitness_heap[0]
         history.append(best_fitness)
-        if generations > 320:
+        if verbose and (generations % 10 == 0):
             print(f"Generation {generations}: Best Fitness = {best_fitness}")
 
-    print(f"Best Solution Found: {best_solution}")
-    print(f"With Fitness: {best_fitness}")
-    return best_solution, best_fitness, history
+    # print(f"Best Solution Found: {best_solution}")
+    # print(f"With Fitness: {best_fitness}")
+    return best_solution, best_fitness, history, population

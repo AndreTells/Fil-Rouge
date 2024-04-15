@@ -17,7 +17,7 @@ def main(route, popsize=100):
     (numberOfTrucks, customers, cost, demandForAll) = getData(
         route, customersDf, depotsDf, trucksDf
     )
-    best_solution, best_fitness, history = genetic_algorithm(
+    best_solution, best_fitness, history, population = genetic_algorithm(
         popsize,
         numberOfTrucks,
         truckKg,
@@ -28,6 +28,7 @@ def main(route, popsize=100):
         maxGenNumber=340,
         mutationRate=0.12,
     )
+    print(population)
 
 
 if __name__ == "__main__":

@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 
 # General constant variables
-truckKg = 2e4
-truckVol = 20
+# truckKg = 2e4
+# truckVol = 20
 truckSpd = 0.6
 
 
