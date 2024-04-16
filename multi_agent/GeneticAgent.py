@@ -130,9 +130,8 @@ class GeneticAgent(Agent):
             # Keeps the best performance solutions while switches the worst performing ones with the ones in the solution pool
             self.population = self.population[: -len(pool)]
             for flattenedSolution in pool:
-                self.population += self.rebuildFlattenSolution(
-                    flattenedSolution.get_best_sol()
-                )
+                sol = self.rebuildFlattenSolution(flattenedSolution.get_best_sol())
+                (self.population).append(sol)
         return
 
     def step(self):

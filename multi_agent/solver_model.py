@@ -46,6 +46,7 @@ class MultiAgentSolverModel(Model):
             truckCapacityKg,
             truckCapacityVol,
             step_size=1,
+            collaborative=colaboration_type,
         )
         self.schedule.add(GA)
 
