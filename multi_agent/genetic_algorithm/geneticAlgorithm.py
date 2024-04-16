@@ -4,6 +4,8 @@ import heapq
 
 # from loadData import *
 from .utils.initializePopulation import initializePopulation
+from ..q_learning import q_learning_iteration
+from .utils.flattenSolution import *
 
 # # General constant variables
 # truckKg = 2e4
@@ -145,39 +147,65 @@ def _treatCrossOver(parents, truckCapacityKg, truckCapacityVol, demandForCustome
     return population
 
 
+def _handleQLearning(solution, q, neighbor_function_list, eval_function, epsilon=0.8):
+    currentSol = flattenSolution(solution)
+    newSolution = q_learning_iteration(
+        currentSol, q, neighbor_function_list, eval_function, epsilon
+    )
+
+    return rebuildFlattenSolution(newSolution)
+
+
 # TODO: Apply Q-learning here
-def _mutation(solution, demandForCustomer, truckCapacityKg, truckCapacityVolume):
-
-    # Randomly select one truck
-    truck_index = random.randint(0, len(solution) - 1)
-    route = solution[truck_index]
-
-    # Ensure there are enough customers for a swap
-    # SWAP
-    if len(route) > 4:  # More than just depot (start/end) and one customer
-        # Randomly select two customers to swap
-        customer_index1, customer_index2 = random.sample(range(1, len(route) - 1), 2)
-
-        # Perform the swap
-        route[customer_index1], route[customer_index2] = (
-            route[customer_index2],
-            route[customer_index1],
+def _mutation(
+    solution,
+    demandForCustomer,
+    truckCapacityKg,
+    truckCapacityVolume,
+    q=None,
+    neighbor_function_list=None,
+    eval_function=None,
+    epsilon=0.8,
+):
+    if q:
+        return _handleQLearning(
+            solution, q, neighbor_function_list, eval_function, epsilon
         )
 
-        # Check capacity constraints and revert if necessary
-        total_weight, total_volume = 0, 0
-        for node in route[1:-1]:
-            node_weight, node_volume = demandForCustomer[node]
-            total_weight += node_weight
-            total_volume += node_volume
+    else:
 
-        # Revert the swap if the mutation results in an infeasible route
-        if total_weight > truckCapacityKg or total_volume > truckCapacityVolume:
+        # Randomly select one truck
+        truck_index = random.randint(0, len(solution) - 1)
+        route = solution[truck_index]
+
+        # Ensure there are enough customers for a swap
+        # SWAP
+        if len(route) > 4:  # More than just depot (start/end) and one customer
+            # Randomly select two customers to swap
+            customer_index1, customer_index2 = random.sample(
+                range(1, len(route) - 1), 2
+            )
+
+            # Perform the swap
             route[customer_index1], route[customer_index2] = (
                 route[customer_index2],
                 route[customer_index1],
             )
-    return solution
+
+            # Check capacity constraints and revert if necessary
+            total_weight, total_volume = 0, 0
+            for node in route[1:-1]:
+                node_weight, node_volume = demandForCustomer[node]
+                total_weight += node_weight
+                total_volume += node_volume
+
+            # Revert the swap if the mutation results in an infeasible route
+            if total_weight > truckCapacityKg or total_volume > truckCapacityVolume:
+                route[customer_index1], route[customer_index2] = (
+                    route[customer_index2],
+                    route[customer_index1],
+                )
+        return solution
 
 
 def genetic_algorithm(
@@ -192,6 +220,9 @@ def genetic_algorithm(
     mutationRate=0.05,
     population=None,
     verbose=False,
+    q=None,
+    neighbor_function_list=None,
+    eval_function=None,
 ):
     """O(m*n)(AMORTIZED) where m is the number of generations and n is the population number"""
     if population is None:
@@ -231,7 +262,13 @@ def genetic_algorithm(
         for i in range(len(population)):
             if random.random() < mutationRate:
                 population[i] = _mutation(
-                    population[i], demandForCustomer, truckCapacityKg, truckCapacityVol
+                    population[i],
+                    demandForCustomer,
+                    truckCapacityKg,
+                    truckCapacityVol,
+                    q,
+                    neighbor_function_list,
+                    eval_function,
                 )
 
         generations += 1

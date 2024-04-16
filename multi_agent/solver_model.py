@@ -17,6 +17,9 @@ class MultiAgentSolverModel(Model):
         solution_pool,
         GA_stepSize,
         colaboration_type=ColaborationTypes.NONE,
+        q=None,
+        neighbor_function_list=None,
+        eval_function=None,
     ):
         super().__init__()
         self.schedule = SimultaneousActivation(self)
@@ -47,6 +50,9 @@ class MultiAgentSolverModel(Model):
             truckCapacityKg,
             truckCapacityVol,
             step_size=GA_stepSize,
+            q=q,
+            neighbor_function_list=neighbor_function_list,
+            eval_function=eval_function,
             collaborative=ColaborationTypes.FRIENDS,
         )
         self.schedule.add(GA)
