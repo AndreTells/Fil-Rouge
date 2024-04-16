@@ -38,11 +38,12 @@ def _tournamentSelection(population, tournament_size, mating_pool_size, fitnessS
 def _orderCrossover(parent1, parent2):
     dad = flatten(parent1)
     mom = flatten(parent2)
-    child1 = [None] * len(dad)
+    child1 = [None] * len(mom)
     child2 = [None] * len(dad)
+    minListLength = len(dad) if len(dad) < len(mom) else len(mom)
 
     # This gets 2 random indices where cx1 is always the smaller and cx2 the bigger
-    cx1, cx2 = sorted(random.sample(range(len(dad)), 2))
+    cx1, cx2 = sorted(random.sample(range(minListLength), 2))
 
     # Child inheritence from dad and mom
     child1[cx1 : cx2 + 1] = dad[cx1 : cx2 + 1]
@@ -124,14 +125,14 @@ def _reconstruct_routes(
 
 
 def _treatCrossOver(parents, truckCapacityKg, truckCapacityVol, demandForCustomer):
-    if len(parents) % 2 != 0:
-        print("Not matching crossover")
-        return -1
+    # if len(parents) % 2 != 0:
+    #     print("Not matching crossover")
+    #     return -1
     parents1 = parents[: len(parents) // 2]
     parents2 = parents[len(parents) // 2 :]
 
     population = []
-    for dad, mom in zip(parents1, parents2):
+    for dad, mom in zip(parents1, parents2, strict=True):
         (child1, child2) = _orderCrossover(dad, mom)
         route1 = _reconstruct_routes(
             child1, truckCapacityKg, truckCapacityVol, demandForCustomer

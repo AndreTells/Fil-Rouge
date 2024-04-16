@@ -15,6 +15,7 @@ class MultiAgentSolverModel(Model):
         truckCapacityKg,
         truckCapacityVol,
         solution_pool,
+        GA_stepSize,
         colaboration_type=ColaborationTypes.NONE,
     ):
         super().__init__()
@@ -45,8 +46,8 @@ class MultiAgentSolverModel(Model):
             GApopulationSize,
             truckCapacityKg,
             truckCapacityVol,
-            step_size=1,
-            collaborative=colaboration_type,
+            step_size=GA_stepSize,
+            collaborative=ColaborationTypes.FRIENDS,
         )
         self.schedule.add(GA)
 
@@ -79,6 +80,10 @@ class MultiAgentSolverModel(Model):
             model_reporters={
                 "TheGlobalBest": compute_global_best_state,
                 "TheGlobalBestValue": compute_global_best_value,
+            },
+            agent_reporters={
+                "Best": lambda a: a.current_step.get_best_sol_value(),
+                "solution": lambda a: a.current_step.get_best_sol(),
             },
         )
 

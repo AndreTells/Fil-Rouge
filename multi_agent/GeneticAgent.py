@@ -123,26 +123,45 @@ class GeneticAgent(Agent):
                 self.model.solution_pool.add_solution(step)
         self.generations += 1
 
+    def next_step(self):
+        i = 0
+        while i < self.stepSize:
+            self.nextGen(mutation_rate=self.mutation_rate)
+            i += 1
+
     def update_population(self):
         pool = self.model.solution_pool.pool.copy()
         if self.population and pool:
             # self.population is ordered by fitness values !
             # Keeps the best performance solutions while switches the worst performing ones with the ones in the solution pool
-            self.population = self.population[: -len(pool)]
+            invalidCount = 0
+            for sol in pool:
+                formattedSol = self.rebuildFlattenSolution(sol.get_best_sol())
+                if len(formattedSol) > self.numberOfTrucks:
+                    invalidCount += 1
+            if invalidCount == len(pool):
+                return
+
+            self.population = self.population[: -(len(pool) - invalidCount)]
+
             for flattenedSolution in pool:
                 sol = self.rebuildFlattenSolution(flattenedSolution.get_best_sol())
+                if len(sol) > self.numberOfTrucks:
+                    continue
+
                 (self.population).append(sol)
+            self.population = self.population[: self.populationSize]
         return
 
     def step(self):
-
         match (self.collaborative):
             case ColaborationTypes.FRIENDS:
                 self.update_population()
+
             case ColaborationTypes.ENEMIES:
                 self.handleEnemies(self.enemyTolerance)
                 return
-        self.nextGen(self.mutation_rate)
+        self.next_step()
 
 
 def createGeneticAgent(
@@ -175,5 +194,6 @@ def createGeneticAgent(
         stepSize=step_size,
         collaborative=collaborative,
         enemiesGenerationsTolerance=generationsToTolerateEnemies,
+        initialPopulation=None,
     )
     return agent

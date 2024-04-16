@@ -26,6 +26,8 @@ def fitnessFunction(solution, cost):
     """Returns total cost of a solution"""
     totalCost = 0
     for route in solution:
+        if route == [0, 0]:
+            continue
         totalCost += calculate_route_cost(route, cost)
     return totalCost
 
