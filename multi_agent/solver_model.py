@@ -15,7 +15,10 @@ class MultiAgentSolverModel(Model):
         truckCapacityKg,
         truckCapacityVol,
         solution_pool,
+        genetic_q_learning = False, #QLEARNING ALGO
+        genetic_q_learning_mutation = None,
         colaboration_type=ColaborationTypes.NONE,
+        agent_labels = []
     ):
         super().__init__()
         self.schedule = SimultaneousActivation(self)
@@ -24,20 +27,21 @@ class MultiAgentSolverModel(Model):
         self.rand_step_generator = rand_step_generator
 
         id_counter = 0
-        for step_function in step_function_list:
+        for i in range(len(step_function_list)):
             a = SolverAgent(
                 id_counter,
                 self,
                 rand_step_generator(),
-                step_function,
+                step_function_list[i],
                 colaborative=colaboration_type,
+                label = 'solver_agent' if len(agent_labels)==0 else agent_labels[i]
             )
             self.schedule.add(a)
 
             id_counter += 1
 
         # Genetic Agent Setup
-        GApopulationSize = 50
+        GApopulationSize = 20
         GA = createGeneticAgent(
             id_counter,
             self,
@@ -48,6 +52,9 @@ class MultiAgentSolverModel(Model):
             step_size=1,
             collaborative=colaboration_type,
         )
+        GA.q_learning = genetic_q_learning
+        GA.q_learning_mutation = genetic_q_learning_mutation
+
         self.schedule.add(GA)
 
         def compute_global_best_state(model):
@@ -80,6 +87,12 @@ class MultiAgentSolverModel(Model):
                 "TheGlobalBest": compute_global_best_state,
                 "TheGlobalBestValue": compute_global_best_value,
             },
+            agent_reporters={
+                "agent label": lambda a: a.label,
+                "agentBest": lambda a: a.current_step.get_best_sol(),
+                "agentBestValue": lambda a: a.current_step.get_best_sol_value()
+                #"AgentBest": lambda a: a. TODO: MAKE AGENTS STORE THEIR BEST SOL IN THE SAME VARIABLE
+            }
         )
 
     def step(self):

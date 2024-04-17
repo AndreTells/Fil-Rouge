@@ -146,7 +146,6 @@ def _treatCrossOver(parents, truckCapacityKg, truckCapacityVol, demandForCustome
 
 # TODO: Apply Q-learning here
 def _mutation(solution, demandForCustomer, truckCapacityKg, truckCapacityVolume):
-
     # Randomly select one truck
     truck_index = random.randint(0, len(solution) - 1)
     route = solution[truck_index]
@@ -187,6 +186,8 @@ def genetic_algorithm(
     customersId,
     cost,
     demandForCustomer,
+    q_learning = False, #QLEARNING ALGO
+    q_learning_mutation = None,
     maxGenNumber=100,
     mutationRate=0.05,
     population=None,
@@ -229,9 +230,11 @@ def genetic_algorithm(
         # Mutation
         for i in range(len(population)):
             if random.random() < mutationRate:
-                population[i] = _mutation(
-                    population[i], demandForCustomer, truckCapacityKg, truckCapacityVol
-                )
+                #QLEARNING ALGO
+                if(q_learning_mutation != None):
+                    population[i] = q_learning_mutation(population[i], demandForCustomer, truckCapacityKg, truckCapacityVol)
+                else:  
+                    population[i] = _mutation(population[i], demandForCustomer, truckCapacityKg, truckCapacityVol)
 
         generations += 1
 

@@ -2,6 +2,8 @@ from collections.abc import Callable
 from .capacity import *
 Path = list[int]
 
+def num_vehicles(path: Path)->int:
+    return path.count(0)-1
 
 # returns whether the given sequence of nodes breaks the capacity condition
 def valid_path(

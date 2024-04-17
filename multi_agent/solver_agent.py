@@ -10,11 +10,13 @@ class SolverAgent(Agent):
         init_step,
         step_function,
         colaborative=ColaborationTypes.NONE,
+        label = 'solver_agent'
     ):
         super().__init__(unique_id, model)
         self.current_step = init_step
         self.step_function = step_function
         self.colaborative = colaborative
+        self.label = label
 
     def get_help(self):
         self.current_step = self.model.solution_pool.get_best_sol()

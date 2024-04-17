@@ -18,6 +18,8 @@ class GeneticAgent(Agent):
         customersId,
         cost,
         demandForCustomer,
+        q_learning = False, #QLEARNING ALGO
+        q_learning_mutation = None,
         initialPopulation=None,
         collaborative=ColaborationTypes.NONE,
         allowWorseSolution=False,
@@ -44,6 +46,10 @@ class GeneticAgent(Agent):
         self.generations = 0
         self.mutation_rate = mutation_rate
         self.enemyTolerance = enemiesGenerationsTolerance
+
+        self.q_learning = q_learning, #QLEARNING ALGO
+        self.q_learning_mutation = q_learning_mutation
+        self.label = 'genetic algorithm'
 
     def flattenSolution(self, solution):
         # Flattens the array to be in the format : 0,1,2,0,3,2,0,2,1,0
@@ -135,7 +141,7 @@ class GeneticAgent(Agent):
         return
 
     def step(self):
-
+        print(self.q_learning)
         match (self.collaborative):
             case ColaborationTypes.FRIENDS:
                 self.update_population()
