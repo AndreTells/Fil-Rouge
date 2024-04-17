@@ -29,7 +29,7 @@ def fitnessFunction(solution, cost):
         if route == [0, 0]:
             continue
         totalCost += calculate_route_cost(route, cost)
-    return totalCost
+    return (solution.count(0)-1)*0.3+totalCost
 
 
 def flatten(routes):

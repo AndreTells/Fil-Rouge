@@ -4,8 +4,8 @@ Path = list[int]
 
 # uses the rand_opt_n and rand_reverse_section at random (50% each)
 def combined_rand_modification(path, num_of_nodes, mat: list[list[float]])->Path:
-    possible_neighbour_functions = [intra_route_swap,inter_route_swap,intra_route_shift,inter_route_shift,two_intra_route_shift,two_intra_route_swap,remove_smallest_route,remove_random_route,split_biggest_route,split_random_route]
-
+    #possible_neighbour_functions = [intra_route_swap,inter_route_swap,intra_route_shift,inter_route_shift,two_intra_route_shift,two_intra_route_swap,remove_smallest_route,remove_random_route,split_biggest_route,split_random_route]
+    possible_neighbour_functions = [intra_route_swap,inter_route_swap]
     return random.choice(possible_neighbour_functions)(path, num_of_nodes, mat)
 
 def intra_route_swap(path, num_of_nodes, mat: list[list[float]]):
@@ -168,11 +168,8 @@ def two_intra_route_swap(path, num_of_nodes, mat: list[list[float]]):
     # swaps two numbers
     if(len(path_list[random_path_id])-2 > 5):
         i = int((len(path_list[random_path_id])-3) * random.random()) + 1 # generate a random number between 1 and num_of_nodes
-        j = -1
-        # avoid getting the pairs with the same position
-        while(j == i or j == i+1 or j==-1):
-            j = int((len(path_list[random_path_id])-3) * random.random()) + 1 # generate a random number between 1 and num_of_nodes
-
+        
+        j = random.choice( [k for k in range(1,len(path_list[random_path_id])-2) if (k!=i and k!=i+1 and k!=i-1)])
         path_list[random_path_id][i],path_list[random_path_id][i+1], path_list[random_path_id][j],path_list[random_path_id][j+1] = path_list[random_path_id][j], path_list[random_path_id][j+1], path_list[random_path_id][i], path_list[random_path_id][i+1]
    
     # join paths
