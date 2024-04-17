@@ -4,6 +4,8 @@ import heapq
 
 # from loadData import *
 from .utils.initializePopulation import initializePopulation
+from ..q_learning import q_learning_iteration
+from .utils.flattenSolution import *
 
 # # General constant variables
 # truckKg = 2e4
@@ -38,11 +40,12 @@ def _tournamentSelection(population, tournament_size, mating_pool_size, fitnessS
 def _orderCrossover(parent1, parent2):
     dad = flatten(parent1)
     mom = flatten(parent2)
-    child1 = [None] * len(dad)
+    child1 = [None] * len(mom)
     child2 = [None] * len(dad)
+    minListLength = len(dad) if len(dad) < len(mom) else len(mom)
 
     # This gets 2 random indices where cx1 is always the smaller and cx2 the bigger
-    cx1, cx2 = sorted(random.sample(range(len(dad)), 2))
+    cx1, cx2 = sorted(random.sample(range(minListLength), 2))
 
     # Child inheritence from dad and mom
     child1[cx1 : cx2 + 1] = dad[cx1 : cx2 + 1]
@@ -124,14 +127,14 @@ def _reconstruct_routes(
 
 
 def _treatCrossOver(parents, truckCapacityKg, truckCapacityVol, demandForCustomer):
-    if len(parents) % 2 != 0:
-        print("Not matching crossover")
-        return -1
+    # if len(parents) % 2 != 0:
+    #     print("Not matching crossover")
+    #     return -1
     parents1 = parents[: len(parents) // 2]
     parents2 = parents[len(parents) // 2 :]
 
     population = []
-    for dad, mom in zip(parents1, parents2):
+    for dad, mom in zip(parents1, parents2, strict=True):
         (child1, child2) = _orderCrossover(dad, mom)
         route1 = _reconstruct_routes(
             child1, truckCapacityKg, truckCapacityVol, demandForCustomer
@@ -144,38 +147,65 @@ def _treatCrossOver(parents, truckCapacityKg, truckCapacityVol, demandForCustome
     return population
 
 
+def _handleQLearning(solution, q, neighbor_function_list, eval_function, epsilon=0.8):
+    currentSol = flattenSolution(solution)
+    newSolution = q_learning_iteration(
+        currentSol, q, neighbor_function_list, eval_function, epsilon
+    )
+
+    return rebuildFlattenSolution(newSolution)
+
+
 # TODO: Apply Q-learning here
-def _mutation(solution, demandForCustomer, truckCapacityKg, truckCapacityVolume):
-    # Randomly select one truck
-    truck_index = random.randint(0, len(solution) - 1)
-    route = solution[truck_index]
-
-    # Ensure there are enough customers for a swap
-    # SWAP
-    if len(route) > 4:  # More than just depot (start/end) and one customer
-        # Randomly select two customers to swap
-        customer_index1, customer_index2 = random.sample(range(1, len(route) - 1), 2)
-
-        # Perform the swap
-        route[customer_index1], route[customer_index2] = (
-            route[customer_index2],
-            route[customer_index1],
+def _mutation(
+    solution,
+    demandForCustomer,
+    truckCapacityKg,
+    truckCapacityVolume,
+    q=None,
+    neighbor_function_list=None,
+    eval_function=None,
+    epsilon=0.8,
+):
+    if q:
+        return _handleQLearning(
+            solution, q, neighbor_function_list, eval_function, epsilon
         )
 
-        # Check capacity constraints and revert if necessary
-        total_weight, total_volume = 0, 0
-        for node in route[1:-1]:
-            node_weight, node_volume = demandForCustomer[node]
-            total_weight += node_weight
-            total_volume += node_volume
+    else:
 
-        # Revert the swap if the mutation results in an infeasible route
-        if total_weight > truckCapacityKg or total_volume > truckCapacityVolume:
+        # Randomly select one truck
+        truck_index = random.randint(0, len(solution) - 1)
+        route = solution[truck_index]
+
+        # Ensure there are enough customers for a swap
+        # SWAP
+        if len(route) > 4:  # More than just depot (start/end) and one customer
+            # Randomly select two customers to swap
+            customer_index1, customer_index2 = random.sample(
+                range(1, len(route) - 1), 2
+            )
+
+            # Perform the swap
             route[customer_index1], route[customer_index2] = (
                 route[customer_index2],
                 route[customer_index1],
             )
-    return solution
+
+            # Check capacity constraints and revert if necessary
+            total_weight, total_volume = 0, 0
+            for node in route[1:-1]:
+                node_weight, node_volume = demandForCustomer[node]
+                total_weight += node_weight
+                total_volume += node_volume
+
+            # Revert the swap if the mutation results in an infeasible route
+            if total_weight > truckCapacityKg or total_volume > truckCapacityVolume:
+                route[customer_index1], route[customer_index2] = (
+                    route[customer_index2],
+                    route[customer_index1],
+                )
+        return solution
 
 
 def genetic_algorithm(
@@ -192,6 +222,9 @@ def genetic_algorithm(
     mutationRate=0.05,
     population=None,
     verbose=False,
+    q=None,
+    neighbor_function_list=None,
+    eval_function=None,
 ):
     """O(m*n)(AMORTIZED) where m is the number of generations and n is the population number"""
     if population is None:
@@ -230,11 +263,15 @@ def genetic_algorithm(
         # Mutation
         for i in range(len(population)):
             if random.random() < mutationRate:
-                #QLEARNING ALGO
-                if(q_learning_mutation != None):
-                    population[i] = q_learning_mutation(population[i], demandForCustomer, truckCapacityKg, truckCapacityVol)
-                else:  
-                    population[i] = _mutation(population[i], demandForCustomer, truckCapacityKg, truckCapacityVol)
+                population[i] = _mutation(
+                    population[i],
+                    demandForCustomer,
+                    truckCapacityKg,
+                    truckCapacityVol,
+                    q,
+                    neighbor_function_list,
+                    eval_function,
+                )
 
         generations += 1
 

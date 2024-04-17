@@ -15,9 +15,11 @@ class MultiAgentSolverModel(Model):
         truckCapacityKg,
         truckCapacityVol,
         solution_pool,
-        genetic_q_learning = False, #QLEARNING ALGO
-        genetic_q_learning_mutation = None,
+        GA_stepSize,
         colaboration_type=ColaborationTypes.NONE,
+        QLearn_q=None,
+        QLearn_neighbor_function_list=None,
+        QLearn_eval_function=None,
         agent_labels = []
     ):
         super().__init__()
@@ -49,7 +51,10 @@ class MultiAgentSolverModel(Model):
             GApopulationSize,
             truckCapacityKg,
             truckCapacityVol,
-            step_size=1,
+            step_size=GA_stepSize,
+            QLearn_q=QLearn_q,
+            QLearn_neighbor_function_list=QLearn_neighbor_function_list,
+            QLearn_eval_function=QLearn_eval_function,
             collaborative=colaboration_type,
         )
         GA.q_learning = genetic_q_learning
@@ -91,7 +96,6 @@ class MultiAgentSolverModel(Model):
                 "agent label": lambda a: a.label,
                 "agentBest": lambda a: a.current_step.get_best_sol(),
                 "agentBestValue": lambda a: a.current_step.get_best_sol_value()
-                #"AgentBest": lambda a: a. TODO: MAKE AGENTS STORE THEIR BEST SOL IN THE SAME VARIABLE
             }
         )
 

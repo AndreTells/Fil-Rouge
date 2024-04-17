@@ -28,7 +28,7 @@ def intra_route_swap(path, num_of_nodes, mat: list[list[float]]):
     if(len(path_list[random_path_id])-2 > 1):
         i = int((len(path_list[random_path_id])-2) * random.random()) + 1 # generate a random number between 1 and num_of_nodes
         j = int((len(path_list[random_path_id])-2) * random.random()) + 1 # generate a random number between 1 and num_of_nodes
-
+        
         path_list[random_path_id][i], path_list[random_path_id][j] = path_list[random_path_id][j], path_list[random_path_id][i]
    
     # join paths

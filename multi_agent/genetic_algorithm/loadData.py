@@ -4,7 +4,7 @@ import numpy as np
 # General constant variables
 # truckKg = 2e4
 # truckVol = 20
-truckSpd = 0.6
+truckSpd = 1.0
 
 
 def getCostDict(customers, depot, edges):
