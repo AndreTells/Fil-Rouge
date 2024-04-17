@@ -1,3 +1,4 @@
+
 import random
 from .utils.helperFunctions import *
 import heapq
@@ -216,8 +217,6 @@ def genetic_algorithm(
     customersId,
     cost,
     demandForCustomer,
-    q_learning = False, #QLEARNING ALGO
-    q_learning_mutation = None,
     maxGenNumber=100,
     mutationRate=0.05,
     population=None,

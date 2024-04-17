@@ -57,8 +57,6 @@ class MultiAgentSolverModel(Model):
             QLearn_eval_function=QLearn_eval_function,
             collaborative=colaboration_type,
         )
-        GA.q_learning = genetic_q_learning
-        GA.q_learning_mutation = genetic_q_learning_mutation
 
         self.schedule.add(GA)
 
