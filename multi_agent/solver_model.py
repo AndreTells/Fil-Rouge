@@ -17,9 +17,9 @@ class MultiAgentSolverModel(Model):
         solution_pool,
         GA_stepSize,
         colaboration_type=ColaborationTypes.NONE,
-        q=None,
-        neighbor_function_list=None,
-        eval_function=None,
+        QLearn_q=None,
+        QLearn_neighbor_function_list=None,
+        QLearn_eval_function=None,
     ):
         super().__init__()
         self.schedule = SimultaneousActivation(self)
@@ -50,10 +50,10 @@ class MultiAgentSolverModel(Model):
             truckCapacityKg,
             truckCapacityVol,
             step_size=GA_stepSize,
-            q=q,
-            neighbor_function_list=neighbor_function_list,
-            eval_function=eval_function,
-            collaborative=ColaborationTypes.FRIENDS,
+            QLearn_q=QLearn_q,
+            QLearn_neighbor_function_list=QLearn_neighbor_function_list,
+            QLearn_eval_function=QLearn_eval_function,
+            collaborative=colaboration_type,
         )
         self.schedule.add(GA)
 

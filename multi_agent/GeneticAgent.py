@@ -75,21 +75,26 @@ class GeneticAgent(Agent):
     def handleEnemies(self, generationTolerance):
         """This function has a patience limit. It will try to find a better solution by adding generationTolerance // 2 generations. If not successful, double mutation_rate to add genetic variability and run for another generationTolerance // 2 generations."""
         bestSol = self.model.solution_pool.get_best_sol()
+        # Fill up solution pool
         if bestSol is None:
+            self.nextGen(self.mutation_rate)
             return
         fitnessToBeat = bestSol.get_best_sol_value()
 
         i = 0
         while (i < (generationTolerance // 2)) and (
-            self.current_best_fitness > fitnessToBeat
+            self.current_best_fitness >= fitnessToBeat
         ):
             self.nextGen(self.mutation_rate)
             i += 1
 
-        while i < generationTolerance and self.current_best_fitness > fitnessToBeat:
+        while i < generationTolerance and self.current_best_fitness >= fitnessToBeat:
             self.nextGen(2 * self.mutation_rate)
             i += 1
-        return
+
+        # # Update pool in case I found a better solution
+        # if self.current_best_fitness < fitnessToBeat:
+        #     solution = flattenSolution(self.current_best_solution)
 
     def nextGen(self, mutation_rate):
         (
@@ -112,23 +117,23 @@ class GeneticAgent(Agent):
             neighbor_function_list=self.neighbor_function_list,
             eval_function=self.eval_function,
         )
-        if self.generations > 0:
+        # if self.generations > 0:
 
-            # If found better solution, update the corresponding attributes
-            if self.current_best_fitness < self.bestFitness:
-                self.best_overall_solution = self.current_best_solution
-                self.current_step.state = flattenSolution(self.current_best_solution)
-                self.current_step.state_value = self.current_best_fitness
-                self.bestFitness = self.current_best_fitness
+        # If found better solution, update the corresponding attributes
+        if self.current_best_fitness < self.bestFitness:
+            self.best_overall_solution = self.current_best_solution
+            self.current_step.state = flattenSolution(self.current_best_solution)
+            self.current_step.state_value = self.current_best_fitness
+            self.bestFitness = self.current_best_fitness
 
-            # It's necessary to fill the solution_pool in case of collaboration
-            if self.collaborative != ColaborationTypes.NONE:
-                step = SolverStep(
-                    flattenSolution(self.current_best_solution),
-                    self.current_best_fitness,
-                    self.stepSize,
-                )
-                self.model.solution_pool.add_solution(step)
+        # It's necessary to fill the solution_pool in case of collaboration
+        if self.collaborative != ColaborationTypes.NONE:
+            step = SolverStep(
+                flattenSolution(self.current_best_solution),
+                self.current_best_fitness,
+                self.stepSize,
+            )
+            self.model.solution_pool.add_solution(step)
         self.generations += 1
 
     def next_step(self):
@@ -182,9 +187,9 @@ def createGeneticAgent(
     step_size=1,
     collaborative=ColaborationTypes.NONE,
     generationsToTolerateEnemies=30,
-    q=None,
-    neighbor_function_list=None,
-    eval_function=None,
+    QLearn_q=None,
+    QLearn_neighbor_function_list=None,
+    QLearn_eval_function=None,
 ):
     customersDf = pd.read_excel("data/2_detail_table_customers.xls")
     depotsDf = pd.read_excel("data/4_detail_table_depots.xls")
@@ -203,9 +208,9 @@ def createGeneticAgent(
         cost,
         demand,
         stepSize=step_size,
-        q=q,
-        neighbor_function_list=neighbor_function_list,
-        eval_function=eval_function,
+        q=QLearn_q,
+        neighbor_function_list=QLearn_neighbor_function_list,
+        eval_function=QLearn_eval_function,
         collaborative=collaborative,
         enemiesGenerationsTolerance=generationsToTolerateEnemies,
         initialPopulation=None,
