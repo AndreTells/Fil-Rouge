@@ -67,12 +67,15 @@ def random_solution(graph: list[list[float]],
         unexplored[current_node] = False
         init_guess[current_vehicle].append(current_node)
         
-        rand_i = current_node    
-        possible_nodes = [a for a in range(num_of_nodes) if unexplored[a]==True]
+        rand_i = -1    
+        possible_nodes = [a for a in range(num_of_nodes) if (unexplored[a]==True)]
         if possible_nodes:
             rand_i = random.choice(possible_nodes)
 
-        if ((not capacity_condition(capacity_add(current_load, node_demand[rand_i]),capacity)) or rand_i == current_node):
+        else:
+            break
+
+        if ((not capacity_condition(capacity_add(current_load, node_demand[rand_i]),capacity))):
             init_guess.append([])
             current_vehicle += 1
 
@@ -84,4 +87,4 @@ def random_solution(graph: list[list[float]],
 
     res = sum(init_guess,[])
     res.append(0)
-    return res[:-1]
+    return res

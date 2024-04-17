@@ -14,6 +14,10 @@ def valid_path(
     capacity_null_value : Callable[[], Capacity]= capacity_null_value,
     capacity_condition:  Callable[[Capacity,Capacity],bool]= capacity_condition
     )->bool:
+    
+    visited_nodes = [x for x in path if x!=0]
+    if(len(visited_nodes)+1 != len(node_demand)):
+        return False
 
     path_load = capacity_null_value()
     for i in range(len(path)-1):
