@@ -2,7 +2,6 @@ import random
 import math
 Path = list[int]
 
-# uses the rand_opt_n and rand_reverse_section at random (50% each)
 def combined_rand_modification(path, num_of_nodes, mat: list[list[float]])->Path:
     possible_neighbour_functions = [intra_route_swap,inter_route_swap,intra_route_shift,inter_route_shift,two_intra_route_shift,two_intra_route_swap,remove_smallest_route,remove_random_route,split_biggest_route,split_random_route]
     

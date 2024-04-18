@@ -5,7 +5,7 @@ Path = list[int]
 def num_vehicles(path: Path)->int:
     return path.count(0)-1
 
-# returns whether the given sequence of nodes breaks the capacity condition
+# returns whether the given sequence of nodes breaks the capacity condition or the must visit every node condition
 def valid_path(
     path: Path,
     capacity: Capacity,

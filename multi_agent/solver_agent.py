@@ -18,12 +18,14 @@ class SolverAgent(Agent):
         self.colaborative = colaborative
         self.label = label
 
+    #gets the best solution available in the solution pool, if it exists
     def get_help(self):
         self.current_step = self.model.solution_pool.get_best_sol()
         if self.current_step == None:
             self.current_step = self.model.rand_step_generator()
         return
 
+    #checks if the agent has the best solution in the solution pool and, if not, execute a step to try and reach it
     def compare_With_best(self):
         best_sol = self.model.solution_pool.get_best_sol()
         if best_sol == None:

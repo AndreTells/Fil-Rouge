@@ -47,6 +47,7 @@ def nearest_neighbour_solution(
     res.append(0)
     return res[:-1]
 
+# generates a random solution wich favours linking points that are close together
 def random_solution(graph: list[list[float]], 
                     node_demand: list[Capacity], 
                     capacity: Capacity,

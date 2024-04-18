@@ -1,6 +1,6 @@
 from typing import TypeVar, Generic
 T = TypeVar("T")
-# generic step for a solver
+# description of generic step for a solver
 class SolverStep(Generic[T]):
     current_step: int
     state: T

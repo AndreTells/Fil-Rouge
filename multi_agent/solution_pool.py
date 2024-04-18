@@ -1,5 +1,4 @@
-
-#TODO: MAKE ABSTRACT CLASS
+# a list of Solver step objects that is queried when agents are collaborating in the solver model
 class solution_pool_simple:
     def __init__(self, difference_function, max_size=30, radious = 4):
         self.pool = []
@@ -7,7 +6,6 @@ class solution_pool_simple:
         self.radious = radious
         self.max_size = max_size
     
-    #TODO: MAKE THE RETURN BE WHAT HAPPEND TO THE STEP ??
     def add_solution(self, step):
         new_sol = step.get_best_sol()
         new_sol_value = step.get_best_sol_value()

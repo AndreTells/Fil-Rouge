@@ -153,8 +153,10 @@ def _handleQLearning(solution, q, neighbor_function_list, eval_function, epsilon
     newSolution = q_learning_iteration(
         currentSol, q, neighbor_function_list, eval_function, epsilon
     )
-
-    return rebuildFlattenSolution(newSolution)
+    if(eval_function(currentSol)> eval_function(newSolution)):
+        return rebuildFlattenSolution(newSolution)
+        
+    return rebuildFlattenSolution(currentSol)
 
 
 # TODO: Apply Q-learning here

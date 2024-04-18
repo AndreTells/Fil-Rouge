@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 Path = list[int]
 
+# transforms a list of the type [0,1,2,3,4,0,5,6,7,8,9,0] into a list like
+# [[0,1,2,3,4,0],[0,5,6,7,8,9,,0]]
 def split_paths(paths: Path)->list[Path]:
     path_list: list[Path]= []
     path_id = -1
@@ -16,6 +18,7 @@ def split_paths(paths: Path)->list[Path]:
 
     return path_list[:-1]
 
+# uses matplot lib to show the path given as a line connecting points in a 2d plane
 def print_path(points: list[tuple[int,int]], sol: Path):
     x = list(map(lambda x: points[x][0], sol))
     y = list(map(lambda x: points[x][1], sol))

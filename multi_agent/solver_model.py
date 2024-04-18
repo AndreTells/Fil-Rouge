@@ -28,6 +28,7 @@ class MultiAgentSolverModel(Model):
         self.solution_pool = solution_pool
         self.rand_step_generator = rand_step_generator
 
+        # initializes solver agents based on the step function list it received
         id_counter = 0
         for i in range(len(step_function_list)):
             a = SolverAgent(
@@ -59,6 +60,9 @@ class MultiAgentSolverModel(Model):
         )
 
         self.schedule.add(GA)
+
+
+        # sets up the data colectors
 
         def compute_global_best_state(model):
             best_sol = None

@@ -29,6 +29,7 @@ def _generate_complete_graph(points: list[Point])->list[list[float]]:
             adjacency_matrix[j][i] = dist
     return adjacency_matrix
 
+# generates a random mock up of the problem based
 def generator(num_points: int)->tuple[list[list[float]], list[tuple[float,float]], list[Point]]:
     points = _generate_random_points(num_points)
     demand_list: list[tuple[float,float]] = [(float(0),float(0))]+[(float(1),float(1)) for _ in range(num_points-1)]
