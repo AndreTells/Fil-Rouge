@@ -21,7 +21,7 @@ class MultiAgentSolverModel(Model):
         solution_pool (SolutionPool): Shared pool of solutions that agents can access and update.
         GA_stepSize (int): Number of generations the genetic agent evolves at each step.
         colaboration_type (ColaborationTypes): Defines the type of collaboration among agents (NONE, FRIENDS, ENEMIES).
-        QLearn_q (optional): GA specific Parameter. Q-learning parameter for agents utilizing Q-learning in their decision processes.
+        QLearn_q (optional): GA specific Parameter. Q-learning object to be used by the GA.
         QLearn_neighbor_function_list (list, optional): GA specific Parameter. Functions to generate neighboring solutions for Q-learning.
         QLearn_eval_function (function, optional): GA specific Parameter. Function to evaluate solution fitness for Q-learning.
         agent_labels (list of str, optional): Labels to assign to solver agents for identification in reports.

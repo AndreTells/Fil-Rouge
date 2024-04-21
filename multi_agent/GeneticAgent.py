@@ -25,7 +25,7 @@ class GeneticAgent(Agent):
         demandForCustomer (dict): A dictionary mapping each customer ID to their demand.
         initialPopulation (list, optional): Initial set of routes to start the genetic algorithm. Defaults to None. If None, it will randomly create the initial populating respecting the constraints set by truckCapacityKg and truckCapacityVol
         collaborative (ColaborationTypes): An enumeration value specifying the type of collaboration (NONE, FRIENDS, ENEMIES).
-        allowWorseSolution (bool): Flag to allow worse solutions in the evolution process.
+        allowWorseSolution (bool): DEPRECATED.
         stepSize (int): Number of generations to evolve the population at each step of the simulation.
         mutation_rate (float): Probability of a mutation occurring in a new offspring.
         enemiesGenerationsTolerance (int): Number of generations to tolerate no improvement before increasing mutation rate.
