@@ -8,6 +8,40 @@ from .genetic_algorithm.utils.flattenSolution import *
 
 
 class GeneticAgent(Agent):
+    """
+    A GeneticAgent class that implements a genetic algorithm for optimizing the delivery routes for a set of trucks
+    to a set of customers, considering both capacity and demand constraints. The agent evolves through generations
+    to find the most cost-effective routing solution.
+
+    Attributes:
+        uniqueId (int): Unique identifier for the agent.
+        model (Model): An object representing the simulation model the agent operates within.
+        populationSize (int): The number of solutions in each generation.
+        numberOfTrucks (int): The number of trucks available for routing.
+        truckCapacityKg (float): The maximum weight capacity of each truck.
+        truckCapacityVol (float): The maximum volume capacity of each truck.
+        customersId (list): List of customer IDs that the trucks need to visit.
+        cost (dict): A dictionary representing the cost associated with each pair of customers
+        demandForCustomer (dict): A dictionary mapping each customer ID to their demand.
+        initialPopulation (list, optional): Initial set of routes to start the genetic algorithm. Defaults to None. If None, it will randomly create the initial populating respecting the constraints set by truckCapacityKg and truckCapacityVol
+        collaborative (ColaborationTypes): An enumeration value specifying the type of collaboration (NONE, FRIENDS, ENEMIES).
+        allowWorseSolution (bool): Flag to allow worse solutions in the evolution process.
+        stepSize (int): Number of generations to evolve the population at each step of the simulation.
+        mutation_rate (float): Probability of a mutation occurring in a new offspring.
+        enemiesGenerationsTolerance (int): Number of generations to tolerate no improvement before increasing mutation rate.
+        q (optional): Q-learning parameter (if Q-learning is incorporated into the genetic algorithm).
+        neighbor_function_list (list, optional): List of functions to generate neighboring solutions.
+        eval_function (function, optional): A function to evaluate the fitness of a solution.
+
+    Methods:
+        handleEnemies(generationTolerance): Manages the evolution process in the presence of competitive agents by
+        potentially increasing the mutation rate if no improvement is observed.
+        nextGen(mutation_rate): Evolves the population to the next generation using the specified mutation rate.
+        next_step(): Advances the genetic algorithm by the specified step size in terms of generations.
+        update_population(): Integrates external solutions into the current population based on performance.
+        step(): Executes one complete step of the simulation based on the agent's collaboration type.
+    """
+
     def __init__(
         self,
         uniqueId,
@@ -51,27 +85,7 @@ class GeneticAgent(Agent):
         self.q = q
         self.neighbor_function_list = neighbor_function_list
         self.eval_function = eval_function
-        self.label = 'genetic algorithm'
-
-    # def flattenSolution(self, solution):
-    #     # Flattens the array to be in the format : 0,1,2,0,3,2,0,2,1,0
-    #     flattenedArray = []
-    #     for truck in solution[:-1]:  # Exclude last solution
-    #         flattenedArray.extend(truck[:-1])  # Exclude trailing zero
-    #     flattenedArray.extend(solution[-1])  # Include last solution
-    #     return flattenedArray
-
-    # def rebuildFlattenSolution(self, flattenSol):
-    #     trucks = []
-    #     truck = [0]
-    #     for elem in flattenSol[1:]:  # Exclude start zero
-    #         if elem == 0:
-    #             truck.append(0)
-    #             trucks.append(truck)
-    #             truck = [0]
-    #         else:
-    #             truck.append(elem)
-    #     return trucks
+        self.label = "genetic algorithm"
 
     def handleEnemies(self, generationTolerance):
         """This function has a patience limit. It will try to find a better solution by adding generationTolerance // 2 generations. If not successful, double mutation_rate to add genetic variability and run for another generationTolerance // 2 generations."""
@@ -92,10 +106,6 @@ class GeneticAgent(Agent):
         while i < generationTolerance and self.current_best_fitness >= fitnessToBeat:
             self.nextGen(2 * self.mutation_rate)
             i += 1
-
-        # # Update pool in case I found a better solution
-        # if self.current_best_fitness < fitnessToBeat:
-        #     solution = flattenSolution(self.current_best_solution)
 
     def nextGen(self, mutation_rate):
         (

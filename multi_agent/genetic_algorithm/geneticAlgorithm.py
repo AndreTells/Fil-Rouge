@@ -1,4 +1,3 @@
-
 import random
 from .utils.helperFunctions import *
 import heapq
@@ -15,10 +14,6 @@ from .utils.flattenSolution import *
 
 
 def _tournamentSelection(population, tournament_size, mating_pool_size, fitnessScores):
-    # Calculate fitness function for every individual in the population
-    # fitnessScores = []
-    # for individual in population:
-    #   fitnessScores.append(fitnessFunction(individual,cost))
 
     matingPool = []
 
@@ -84,23 +79,6 @@ def _reconstruct_routes(
     routes = []
     current_route = [0]
     current_weight, current_volume = 0, 0
-    # trucks = [[0] * numberOfTrucks]
-    # customerRemaining = flat_sequence.copy()
-    # while customerRemaining:
-    #     for i in range(len(trucks)):
-    #         if not customerRemaining:
-    #             break
-    #         customerChosen = customerRemaining[0]
-    #         demand = demandForCustomer[customerChosen]
-
-    #         if canAddCustomerToTruck(
-    #             trucks[i], truckKg, truckVol, demand, demandForCustomer
-    #         ):
-    #             truck.append(customerChosen)
-    #             customerRemaining.pop(0)
-    # for truck in trucks:
-    #     if len(truck) > 1:  # If it has at least one customer
-    #         truck.append(0)
 
     for node in flat_sequence:
         node_weight, node_volume = demandForCustomer[node]
@@ -128,9 +106,7 @@ def _reconstruct_routes(
 
 
 def _treatCrossOver(parents, truckCapacityKg, truckCapacityVol, demandForCustomer):
-    # if len(parents) % 2 != 0:
-    #     print("Not matching crossover")
-    #     return -1
+
     parents1 = parents[: len(parents) // 2]
     parents2 = parents[len(parents) // 2 :]
 
@@ -153,9 +129,9 @@ def _handleQLearning(solution, q, neighbor_function_list, eval_function, epsilon
     newSolution = q_learning_iteration(
         currentSol, q, neighbor_function_list, eval_function, epsilon
     )
-    if(eval_function(currentSol)> eval_function(newSolution)):
+    if eval_function(currentSol) > eval_function(newSolution):
         return rebuildFlattenSolution(newSolution)
-        
+
     return rebuildFlattenSolution(currentSol)
 
 
